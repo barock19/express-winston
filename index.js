@@ -124,7 +124,13 @@ function errorLogger(options) {
     return function (err, req, res, next) {
 
         // Let winston gather all the error data.
-        var exceptionMeta = winston.exception.getAllInfo(err);
+        var exceptionMeta = {
+            date:    new Date().toString(),
+            process: winston.exception.getProcessInfo(),
+            os:      winston.exception.getOsInfo(),
+            stack:   err.stack && err.stack.split('\n')
+        };
+
         exceptionMeta.req = filterObject(req, requestWhitelist, options.requestFilter);
 
         // This is fire and forget, we don't want logging to hold up the request so don't wait for the callback
